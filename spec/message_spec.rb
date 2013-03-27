@@ -3,7 +3,8 @@ require 'spec_helper'
 describe Message do 
   let(:nick) { 'Seamus' }
   let(:chat) { 'The website is down!' }
-  let(:message) { Message.new({ :nick => nick, :chat => chat }) }
+  let(:chatroom) { 'WebsiteIsDownComplaints'}
+  let(:message) { Message.new({ :nick => nick, :chat => chat, :chatroom => chatroom }) }
 
   context 'readers' do
     it 'returns the message through #chat' do
@@ -34,9 +35,19 @@ describe Message do
     it 'GETs the last 20 chats from the chatroom' do
       stub = stub_request(:get, SERVER).
               to_return(:status => 200, :body => "" )
-      message.get_chats
+      Message.get_chats
       stub.should have_been_requested
     end
+
+    it 'displays the last 20 chats from the chatroom' do
+       stub = stub_request(:get, SERVER).
+              to_return(:status => 200, :body => VALID_GET_RESPONSE)
+       messages = Message.get_chats       
+       nicks_array = messages.map { |message| message.nick}
+       nicks_array.should eq ['mickey','Bobert','Georgangelo']
+    end
   end
+
+
 
 end

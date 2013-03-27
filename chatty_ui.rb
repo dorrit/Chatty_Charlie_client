@@ -2,13 +2,13 @@ SERVER = 'http://localhost:3000/messages/'
 require 'json'
 require 'faraday'
 require 'timeout'
+require './lib/message'
 
 def welcome
   puts "Welcome to Chatty. Type /help for help, /exit to exit."
   puts "To stop listening and start chatting, type /chat"
   command_line
 end
-
 
 def command_line  
   input = nil
@@ -43,7 +43,7 @@ end
   def send_message(nick, chat)
     puts 'Type your message and press enter to send:'
     chat = gets.chomp
-    message = Message.new({:chat => chat, :nick => nick)
+    message = Message.new(:chatroom => 'default', :chat => chat, :nick => (nick ? nick : 'anonymous'))
     message.say
   end
 
@@ -52,7 +52,9 @@ def poll_server
   input = nil
   puts "Press '/' and then enter to compose a chat:"
   until input == '/'
-    puts time += 1
+    #puts cool_string
+    #puts time += 1
+    Message.get_chats.each { |message| puts message.chat}
     begin
       Timeout.timeout(1) do
         input = gets.chomp
@@ -61,6 +63,25 @@ def poll_server
     end
   end
   input
+end
+
+
+
+
+
+
+
+
+
+
+
+
+def cool_string
+  random_lead = ["Yeah man,", "I had no idea that", "Like, really man, I totally heard that", "Who can even believe that"]
+  random_nicks = %w(John Jacob Mark Mindy Balthasar Figaro Zeke Bort)
+  random_nouns = %w(sandwiches cans bottle beers ledges tamborines bowls orangutans)
+  random_transitive_verbs = %w(leeches transitions imagines considers schemes tricks mixes)
+  string = random_nicks[rand(random_nicks.length-1)] + '> ' + random_lead[rand(random_lead.length-1)] + ' ' + random_nicks[rand(random_nicks.length-1)] + ' ' + random_transitive_verbs[rand(random_transitive_verbs.length-1)] + ' ' + random_nouns[rand(random_nouns.length-1)] + ' '
 end
 
 welcome
